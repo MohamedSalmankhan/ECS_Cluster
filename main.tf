@@ -279,7 +279,7 @@ resource "aws_iam_instance_profile" "instance_ecs_prof" {
 resource "aws_autoscaling_group" "ASG_inst" {
   name = "terra_ASG"
   launch_configuration = "${aws_launch_configuration.inst_config.name}"
-  vpc_zone_identifier = ["${aws_subnet.public_subnet.*.id}"]
+  vpc_zone_identifier = ["${aws_subnet.private_subnet.*.id}"]
   max_size = "${var.asg_max}"
   min_size = "${var.asg_min}"
   desired_capacity = "${var.asg_desired}"
