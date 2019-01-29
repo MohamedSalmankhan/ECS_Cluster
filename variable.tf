@@ -1,15 +1,15 @@
 variable "region" {
   default = "us-east-1"
 }
-variable "vpc-cidr-block" {
+variable "vpc_cidr_block" {
   default = "10.10.0.0/16"
 }
-variable "azs-count" {
+variable "azs_count" {
   default = 2
 }
-variable "admin-cidr" {
+variable "admin_cidr" {
 }
-variable "key-name" {
+variable "key_name" {
 }
 variable "asg_min" {
   default = 1
