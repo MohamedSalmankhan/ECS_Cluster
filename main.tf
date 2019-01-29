@@ -2,7 +2,7 @@ provider "aws" {
   region = "${var.region}"
 }
 resource "aws_vpc" "Terra_vpc" {
-  cidr_block = "${var.vpc-cidr-block}"
+  cidr_block = "${var.vpc_cidr_block}"
   instance_tenancy = "default"
   tags {
     Name = "terra-vpc"
@@ -12,7 +12,7 @@ data "aws_availability_zones" "available_az" {
 }
 
 resource "aws_subnet" "public_subnet" {
-  count = "${var.azs-count}"
+  count = "${var.azs_count}"
   vpc_id = "${aws_vpc.Terra_vpc.id}"
   availability_zone = "${data.aws_availability_zones.available_az.names[count.index]}"
   cidr_block = "${cidrsubnet(aws_vpc.Terra_vpc.cidr_block, 8, count.index)}"
@@ -22,7 +22,7 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 resource "aws_subnet" "private_subnet" {
-  count = "${var.azs-count}"
+  count = "${var.azs_count}"
   vpc_id = "${aws_vpc.Terra_vpc.id}"
   availability_zone = "${data.aws_availability_zones.available_az.names[count.index]}"
   cidr_block = "${cidrsubnet(aws_vpc.Terra_vpc.cidr_block, 8, count.index+4)}"
@@ -36,6 +36,7 @@ resource "aws_eip" "EIP-NG" {
   vpc = true
 }
 resource "aws_nat_gateway" "NG" {
+  count = "${var.azs_count}"
   allocation_id = "${aws_eip.EIP-NG.id}"
   subnet_id = "${element(aws_subnet.public_subnet.*.id, count.index)}"
 }
@@ -56,7 +57,7 @@ resource "aws_route_table" "route_IG" {
   }
 }
 resource "aws_route_table_association" "route_public_sub" {
-  count = "${var.azs-count}"
+  count = "${var.azs_count}"
   route_table_id = "${aws_route_table.route_IG.id}"
   subnet_id = "${element(aws_subnet.public_subnet.*.id, count.index)}"
 }
@@ -72,7 +73,7 @@ resource "aws_route_table" "route_NG" {
   }
 }
 resource "aws_route_table_association" "route_private_sub" {
-  count = "${var.azs-count}"
+  count = "${var.azs_count}"
   route_table_id = "${aws_route_table.route_NG.id}"
   subnet_id = "${element(aws_subnet.private_subnet.*.id, count.index)}"
 }
@@ -104,7 +105,7 @@ resource "aws_security_group" "SG_EC2" {
     from_port = 22
     to_port = 22
     protocol = "tcp"
-    cidr_blocks = ["${var.admin-cidr}"]
+    cidr_blocks = ["${var.admin_cidr}"]
   }
   ingress {
     protocol = "tcp"
@@ -309,7 +310,7 @@ resource "aws_launch_configuration" "inst_config" {
   name = "terra-inst"
   image_id = "${data.aws_ami.stable_coreos_ami.id}"
   instance_type = "t2.micro"
-  key_name = "${var.key-name}"
+  key_name = "${var.key_name}"
   associate_public_ip_address = true
   enable_monitoring = true
   security_groups = ["${aws_security_group.SG_EC2.id}"]
