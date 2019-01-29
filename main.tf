@@ -36,7 +36,6 @@ resource "aws_eip" "EIP-NG" {
   vpc = true
 }
 resource "aws_nat_gateway" "NG" {
-  count = "${var.azs_count}"
   allocation_id = "${aws_eip.EIP-NG.id}"
   subnet_id = "${element(aws_subnet.public_subnet.*.id, count.index)}"
 }
