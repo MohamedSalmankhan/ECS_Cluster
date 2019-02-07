@@ -272,7 +272,7 @@ resource "aws_iam_role_policy" "instance_role_policy" {
   role = "${aws_iam_role.instance_role.id}"
 }
 resource "aws_iam_instance_profile" "instance_ecs_prof" {
-  name = "terra-inst-ecs-prof"
+  name = "terra-inst-ecs-profile"
   role = "${aws_iam_role.instance_role.name}"
 }
 
